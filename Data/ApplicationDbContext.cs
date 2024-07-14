@@ -27,7 +27,7 @@ namespace OkuoTest.Data
                 .WithOne(p => p.Empresa)
                 .HasForeignKey(p => p.EmpresaId);
 
-             // Configuración de la relación uno a muchos entre Planta y Contacto
+            // Configuración de la relación uno a muchos entre Planta y Contacto
             modelBuilder.Entity<Planta>()
                 .HasMany(p => p.Contactos)
                 .WithOne(c => c.Planta)
@@ -35,15 +35,15 @@ namespace OkuoTest.Data
 
             // Configuración de la relación uno a muchos entre TipoPlanta y Planta
             modelBuilder.Entity<TipoPlanta>()
-                .HasMany(p => p.Plantas)
-                .WithOne(tp => tp.Tipo)
-                .HasForeignKey(p => p.Id);
+                .HasMany(tp => tp.Plantas)
+                .WithOne(p => p.Tipo)
+                .HasForeignKey(p => p.TipoPlantaId); // Usar TipoPlantaId como clave foránea
 
-            // Configuración de la relación uno a muchos entre TipoPlanta y Planta
+            // Configuración de la relación uno a muchos entre ClasificacionPlanta y Planta
             modelBuilder.Entity<ClasificacionPlanta>()
-                .HasMany(p => p.Plantas)
-                .WithOne(tp => tp.Clasificacion)
-                .HasForeignKey(p => p.Id);
+                .HasMany(cp => cp.Plantas)
+                .WithOne(p => p.Clasificacion)
+                .HasForeignKey(p => p.ClasificacionPlantaId); // Usar ClasificacionPlantaId como clave foránea
         }
 
     }

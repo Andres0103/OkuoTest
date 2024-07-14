@@ -4,7 +4,7 @@
 
 namespace OkuoTest.Migrations
 {
-    public partial class migracion : Migration
+    public partial class migration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -52,19 +52,22 @@ namespace OkuoTest.Migrations
                 name: "Plantas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Nit = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Ubicacion = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InformacionContacto = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmpresaId = table.Column<int>(type: "int", nullable: false)
+                    EmpresaId = table.Column<int>(type: "int", nullable: false),
+                    TipoPlantaId = table.Column<int>(type: "int", nullable: false),
+                    ClasificacionPlantaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Plantas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Plantas_ClasificacionPlanta_Id",
-                        column: x => x.Id,
+                        name: "FK_Plantas_ClasificacionPlanta_ClasificacionPlantaId",
+                        column: x => x.ClasificacionPlantaId,
                         principalTable: "ClasificacionPlanta",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -75,8 +78,8 @@ namespace OkuoTest.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Plantas_TipoPlanta_Id",
-                        column: x => x.Id,
+                        name: "FK_Plantas_TipoPlanta_TipoPlantaId",
+                        column: x => x.TipoPlantaId,
                         principalTable: "TipoPlanta",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -111,9 +114,19 @@ namespace OkuoTest.Migrations
                 column: "PlantaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Plantas_ClasificacionPlantaId",
+                table: "Plantas",
+                column: "ClasificacionPlantaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Plantas_EmpresaId",
                 table: "Plantas",
                 column: "EmpresaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Plantas_TipoPlantaId",
+                table: "Plantas",
+                column: "TipoPlantaId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

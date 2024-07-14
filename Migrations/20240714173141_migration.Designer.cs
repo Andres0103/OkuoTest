@@ -11,8 +11,8 @@ using OkuoTest.Data;
 namespace OkuoTest.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240714011514_migracion")]
-    partial class migracion
+    [Migration("20240714173141_migration")]
+    partial class migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -97,6 +97,12 @@ namespace OkuoTest.Migrations
             modelBuilder.Entity("OkuoTest.Models.Planta", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ClasificacionPlantaId")
                         .HasColumnType("int");
 
                     b.Property<int>("EmpresaId")
@@ -114,13 +120,20 @@ namespace OkuoTest.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TipoPlantaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Ubicacion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClasificacionPlantaId");
+
                     b.HasIndex("EmpresaId");
+
+                    b.HasIndex("TipoPlantaId");
 
                     b.ToTable("Plantas");
                 });
@@ -154,21 +167,21 @@ namespace OkuoTest.Migrations
 
             modelBuilder.Entity("OkuoTest.Models.Planta", b =>
                 {
+                    b.HasOne("OkuoTest.Models.ClasificacionPlanta", "Clasificacion")
+                        .WithMany("Plantas")
+                        .HasForeignKey("ClasificacionPlantaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OkuoTest.Models.Empresa", "Empresa")
                         .WithMany("Plantas")
                         .HasForeignKey("EmpresaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OkuoTest.Models.ClasificacionPlanta", "Clasificacion")
-                        .WithMany("Plantas")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OkuoTest.Models.TipoPlanta", "Tipo")
                         .WithMany("Plantas")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("TipoPlantaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

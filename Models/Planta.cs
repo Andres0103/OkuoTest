@@ -17,14 +17,17 @@ namespace OkuoTest.Models
 
         public int EmpresaId { get; set; }
 
-        public TipoPlanta Tipo { get; set; }
+        public int TipoPlantaId { get; set; } // Definir explícitamente la clave foránea
 
-        public ClasificacionPlanta Clasificacion { get; set; }
+        public TipoPlanta? Tipo { get; set; }
 
-        // Navegación
-        public Empresa Empresa { get; set; }
+        public int ClasificacionPlantaId { get; set; } // Definir explícitamente la clave foránea
+
+        public ClasificacionPlanta? Clasificacion { get; set; }
+
+        public Empresa? Empresa { get; set; }
 
         // Colección de Contactos
-        public ICollection<Contacto> Contactos { get; set; }
+        public ICollection<Contacto>? Contactos { get; set; }
     }
 }

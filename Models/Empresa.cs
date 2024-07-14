@@ -6,6 +6,6 @@ public class Empresa
     public string NIT { get; set; }
 
     // Navegación
-    public List<Planta> Plantas { get; set; } = new List<Planta>();
-
+    //public List<Planta> Plantas { get; set; } = new List<Planta>();
+    public ICollection<Planta> Plantas { get; set; }
 }

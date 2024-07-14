@@ -1,55 +1,62 @@
-﻿using OkuoTest.Models;
+﻿using OkuoTest.Data;
+using OkuoTest.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace OkuoTest.Services
 {
-    public class TipoPlantaServiceImpl : ITipoPlantaService
+    public class TipoPlantaService : ITipoPlantaService
     {
-        private readonly List<TipoPlanta> _tiposPlantas;
-        private int _nextId = 1;
+        private readonly ApplicationDbContext _context;
 
-        public TipoPlantaServiceImpl()
+        public TipoPlantaService(ApplicationDbContext context)
         {
-            _tiposPlantas = new List<TipoPlanta>();
+            _context = context;
         }
 
-        public List<TipoPlanta> GetAll()
+        public async Task<IEnumerable<TipoPlanta>> GetAllTipoPlantasAsync()
         {
-            return _tiposPlantas;
+            return await _context.TipoPlanta.ToListAsync();
         }
 
-        public TipoPlanta GetById(int id)
+        public async Task<TipoPlanta> GetTipoPlantasByIdAsync(int tipoPlantasId)
         {
-            return _tiposPlantas.FirstOrDefault(tp => tp.Id == id);
+            return await _context.TipoPlanta.FindAsync(tipoPlantasId);
         }
 
-        public TipoPlanta Create(TipoPlanta tipoPlanta)
+        public async Task<TipoPlanta> CreateTipoPlantasaAsync(TipoPlanta tipoPlanta)
         {
-            tipoPlanta.Id = _nextId++;
-            _tiposPlantas.Add(tipoPlanta);
+            _context.TipoPlanta.Add(tipoPlanta);
+            await _context.SaveChangesAsync();
             return tipoPlanta;
         }
 
-        public TipoPlanta Update(int id, TipoPlanta tipoPlanta)
+        public async Task<TipoPlanta> UpdateTipoPlantasAsync(int tipoPlantasId, TipoPlanta tipoPlantaActualizada)
         {
-            var existingTipoPlanta = _tiposPlantas.FirstOrDefault(tp => tp.Id == id);
-            if (existingTipoPlanta != null)
+            var tipoPlanta = await _context.TipoPlanta.FindAsync(tipoPlantasId);
+            if (tipoPlanta == null)
             {
-                existingTipoPlanta.Nombre = tipoPlanta.Nombre;
+                return null;
             }
-            return existingTipoPlanta;
+
+            tipoPlanta.Nombre = tipoPlantaActualizada.Nombre;
+
+            await _context.SaveChangesAsync();
+            return tipoPlanta;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteTipoPlantasaAsync(int tipoPlantasId)
         {
-            var tipoPlantaToRemove = _tiposPlantas.FirstOrDefault(tp => tp.Id == id);
-            if (tipoPlantaToRemove != null)
+            var tipoPlanta = await _context.TipoPlanta.FindAsync(tipoPlantasId);
+            if (tipoPlanta == null)
             {
-                _tiposPlantas.Remove(tipoPlantaToRemove);
-                return true;
+                return false;
             }
-            return false;
+
+            _context.TipoPlanta.Remove(tipoPlanta);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

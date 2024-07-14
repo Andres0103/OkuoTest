@@ -10,6 +10,6 @@
 
         // Clave foránea y navegación a Planta
         public int PlantaId { get; set; }
-        public Planta Planta { get; set; }
+        public Planta? Planta { get; set; }
     }
 }

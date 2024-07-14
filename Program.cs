@@ -30,7 +30,7 @@ namespace OkuoTest
             builder.Services.AddScoped<IPlantaService, PlantaService>();
             builder.Services.AddScoped<IContactoService, ContactoService>();
             builder.Services.AddScoped<IEmpresaService, EmpresaService>();
-            builder.Services.AddScoped<IPlantaService, PlantaService>();
+            builder.Services.AddScoped<ITipoPlantaService, TipoPlantaService>();
             builder.Services.AddScoped<IClasificacionPlantaService, ClasificacionPlantaService>();
 
             var app = builder.Build();

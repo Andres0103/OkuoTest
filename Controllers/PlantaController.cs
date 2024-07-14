@@ -25,15 +25,15 @@ namespace OkuoTest.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Planta>>> GetPlantas()
         {
-            var plantas = await _plantaService.GetAllPlantasAsync();
-            return Ok(plantas);
+            return await _context.Plantas.ToListAsync();
         }
 
         // GET: api/planta/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Planta>> GetPlanta(int id)
         {
-            var planta = await _plantaService.GetPlantaByIdAsync(id);
+            var planta = await _context.Plantas.FindAsync(id);
+
             if (planta == null)
             {
                 return NotFound();
@@ -43,25 +43,39 @@ namespace OkuoTest.Controllers
 
         // POST: api/planta
         [HttpPost]
-        public async Task<ActionResult<Planta>> PostPlanta(Planta planta)
+        public async Task<ActionResult<Planta>> CreatePlantaAsync(Planta planta)
         {
-            var nuevaPlanta = await _plantaService.CreatePlantaAsync(planta);
-            return CreatedAtAction(nameof(GetPlanta), new { id = nuevaPlanta.Id }, nuevaPlanta);
+            _context.Plantas.Add(planta);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetPlanta), new { id = planta.Id }, planta);
         }
 
         // PUT: api/planta/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlanta(int id, Planta planta)
         {
+
             if (id != planta.Id)
             {
-                return BadRequest();
+                return BadRequest("El ID proporcionado no coincide con algun registro.");
             }
 
-            var plantaActualizada = await _plantaService.UpdatePlantaAsync(id, planta);
-            if (plantaActualizada == null)
+            try
             {
-                return NotFound();
+                _context.Entry(planta).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PlantaExist(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
             return NoContent();
@@ -71,12 +85,21 @@ namespace OkuoTest.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlanta(int id)
         {
-            var result = await _plantaService.DeletePlantaAsync(id);
-            if (!result)
+            var planta = await _context.Plantas.FindAsync(id);
+            if (planta == null)
             {
                 return NotFound();
             }
+
+            _context.Plantas.Remove(planta);
+            await _context.SaveChangesAsync();
+
             return NoContent();
+        }
+
+        private bool PlantaExist(int id)
+        {
+            return _context.Plantas.Any(e => e.Id == id);
         }
     }
 }

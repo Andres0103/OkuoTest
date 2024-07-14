@@ -1,14 +1,11 @@
 ﻿using OkuoTest.Models;
-using System.Collections.Generic;
 
-namespace OkuoTest.Services
+namespace OkuoTest.Services;
+public interface ITipoPlantaService
 {
-    public interface ITipoPlantaService
-    {
-        List<TipoPlanta> GetAll();
-        TipoPlanta GetById(int id);
-        TipoPlanta Create(TipoPlanta tipoPlanta);
-        TipoPlanta Update(int id, TipoPlanta tipoPlanta);
-        bool Delete(int id);
-    }
+    Task<IEnumerable<TipoPlanta>> GetAllTipoPlantasAsync();
+    Task<TipoPlanta> GetTipoPlantasByIdAsync(int tipoPlantasId);
+    Task<TipoPlanta> CreateTipoPlantasaAsync(TipoPlanta tipoPlanta);
+    Task<TipoPlanta> UpdateTipoPlantasAsync(int tipoPlantasId, TipoPlanta tipoPlantaActualizada);
+    Task<bool> DeleteTipoPlantasaAsync(int tipoPlantasId);
 }

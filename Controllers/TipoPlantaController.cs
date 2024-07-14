@@ -1,83 +1,103 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OkuoTest.Data;
 using OkuoTest.Models;
-using OkuoTest.Services;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace OkuoTest.Controllers
+namespace OkuoTest.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class TipoPlantaController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class TipoPlantaController : ControllerBase
+    private readonly ApplicationDbContext _context;
+
+    public TipoPlantaController(ApplicationDbContext context)
     {
-        private readonly TipoPlantaServiceImpl _tipoPlantaService;
+        _context = context;
+    }
 
-        private readonly ApplicationDbContext _context;
-        public TipoPlantaController(TipoPlantaServiceImpl tipoPlantaService, ApplicationDbContext context)
+    // GET: api/empresa
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<TipoPlanta>>> GetEmpresas()
+    {
+        return await _context.TipoPlanta.ToListAsync();
+    }
+
+    // GET: api/empresa/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<TipoPlanta>> GetTipoEmpresa(int id)
+    {
+        var tipoPlanta = await _context.TipoPlanta.FindAsync(id);
+
+        if (tipoPlanta == null)
         {
-            _tipoPlantaService = tipoPlantaService;
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/TipoPlanta
-        [HttpGet]
-        public IActionResult Get()
+        return tipoPlanta;
+    }
+
+    // POST: api/empresa
+    [HttpPost]
+    public async Task<ActionResult<TipoPlanta>> PostTipoPlanta(TipoPlanta tipoPlanta)
+    {
+        _context.TipoPlanta.Add(tipoPlanta);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetTipoEmpresa), new { id = tipoPlanta.Id }, tipoPlanta);
+    }
+
+    // PUT: api/empresa/
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutTipoPlanta(int id, TipoPlanta tipoPlanta)
+    {
+        if (id != tipoPlanta.Id)
         {
-            var tiposPlantas = _tipoPlantaService.GetAll();
-            return Ok(tiposPlantas);
+            return BadRequest("El ID proporcionado en la URL no coincide con el ID de la empresa.");
         }
 
-        // GET: api/TipoPlanta/5
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        try
         {
-            var tipoPlanta = _tipoPlantaService.GetById(id);
-            if (tipoPlanta == null)
+            _context.Entry(tipoPlanta).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!TipoPlantaExist(id))
             {
                 return NotFound();
             }
-            return Ok(tipoPlanta);
+            else
+            {
+                throw;
+            }
         }
 
-        // POST: api/TipoPlanta
-        [HttpPost]
-        public IActionResult Post([FromBody] TipoPlanta tipoPlanta)
+        return NoContent();
+    }
+
+
+    // DELETE: api/empresa/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTipoPlanta(int id)
+    {
+        var tipoPlanta = await _context.TipoPlanta.FindAsync(id);
+        if (tipoPlanta == null)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var createdTipoPlanta = _tipoPlantaService.Create(tipoPlanta);
-            return CreatedAtAction(nameof(GetById), new { id = createdTipoPlanta.Id }, createdTipoPlanta);
+            return NotFound();
         }
 
-        // PUT: api/TipoPlanta/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] TipoPlanta tipoPlanta)
-        {
-            if (id != tipoPlanta.Id)
-            {
-                return BadRequest("El ID proporcionado en la URL no coincide con el ID de la planta.");
-            }
+        _context.TipoPlanta.Remove(tipoPlanta);
+        await _context.SaveChangesAsync();
 
-            var updatedTipoPlanta = _tipoPlantaService.Update(id, tipoPlanta);
-            if (updatedTipoPlanta == null)
-            {
-                return NotFound();
-            }
-            return Ok(updatedTipoPlanta);
-        }
+        return NoContent();
+    }
 
-        // DELETE: api/TipoPlanta/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            var deleted = _tipoPlantaService.Delete(id);
-            if (!deleted)
-            {
-                return NotFound();
-            }
-            return NoContent();
-        }
+    private bool TipoPlantaExist(int id)
+    {
+        return _context.TipoPlanta.Any(e => e.Id == id);
     }
 }
