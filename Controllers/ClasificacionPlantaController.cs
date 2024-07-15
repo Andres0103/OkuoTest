@@ -6,98 +6,94 @@ using OkuoTest.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OkuoTest.Controllers
+namespace OkuoTest.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class ClasificacionPlantaController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ClasificacionPlantaController : ControllerBase
+    private readonly ApplicationDbContext _context;
+    private readonly IClasificacionPlantaService _clasificacionPlantaService;
+    public ClasificacionPlantaController(IClasificacionPlantaService clasificacionPlantaService, ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IClasificacionPlantaService _clasificacionPlantaService;
+        _clasificacionPlantaService = clasificacionPlantaService;
+        _context = context;
+    }
 
-        public ClasificacionPlantaController(IClasificacionPlantaService clasificacionPlantaService, ApplicationDbContext context)
+    // GET: api/clasificacionplanta
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ClasificacionPlanta>>> GetAll()
+    {
+        return await _context.ClasificacionPlanta.ToListAsync();
+    }
+
+    // GET: api/clasificacionplanta
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ClasificacionPlanta>> GetClasificacionById(int id)
+    {
+        var clasificacion = await _context.ClasificacionPlanta.FindAsync(id);
+        if (clasificacion == null)
         {
-            _clasificacionPlantaService = clasificacionPlantaService;
-            _context = context;
+            return NotFound();
+        }
+        return Ok(clasificacion);
+    }
+
+    // POST: api/clasificacionplanta
+    [HttpPost]
+    public async Task<ActionResult<ClasificacionPlanta>> CreateClasificacion(ClasificacionPlanta clasificacionPlanta)
+    {
+        _context.ClasificacionPlanta.Add(clasificacionPlanta);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetClasificacionById), new { id = clasificacionPlanta.Id }, clasificacionPlanta);
+    }
+
+
+    // PUT: api/clasificacionplanta
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, ClasificacionPlanta clasificacionPlanta)
+    {
+        if (id != clasificacionPlanta.Id)
+        {
+            return BadRequest("El ID proporcionado en la URL no coincide con el ID de la clasificación.");
         }
 
-        // GET: api/clasificacionplanta
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClasificacionPlanta>>> GetAll()
+        try
         {
-            return await _context.ClasificacionPlanta.ToListAsync();
+            _context.Entry(clasificacionPlanta).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
-
-        // GET: api/clasificacionplanta/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ClasificacionPlanta>> GetClasificacionById(int id)
+        catch (DbUpdateConcurrencyException)
         {
-            var clasificacion = await _context.ClasificacionPlanta.FindAsync(id);
-            if (clasificacion == null)
+            if (!ClasificacionPlantaExists(id))
             {
                 return NotFound();
             }
-            return Ok(clasificacion);
-        }
-
-        // POST: api/clasificacionplanta
-        [HttpPost]
-        public async Task<ActionResult<ClasificacionPlanta>> CreateClasificacion(ClasificacionPlanta clasificacionPlanta)
-        {
-            _context.ClasificacionPlanta.Add(clasificacionPlanta);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetClasificacionById), new { id = clasificacionPlanta.Id }, clasificacionPlanta);
-        }
-
-
-        // PUT: api/clasificacionplanta/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, ClasificacionPlanta clasificacionPlanta)
-        {
-            if (id != clasificacionPlanta.Id)
+            else
             {
-                return BadRequest("El ID proporcionado en la URL no coincide con el ID de la clasificación.");
+                throw;
             }
-
-            try
-            {
-                _context.Entry(clasificacionPlanta).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClasificacionPlantaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return NoContent();
         }
+        return NoContent();
+    }
 
-        // DELETE: api/clasificacionplanta/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+    // DELETE: api/clasificacionplanta
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var clasificacion = await _context.ClasificacionPlanta.FindAsync(id);
+        if (clasificacion == null)
         {
-            var clasificacion = await _context.ClasificacionPlanta.FindAsync(id);
-            if (clasificacion == null)
-            {
-                return NotFound();
-            }
-
-            _context.ClasificacionPlanta.Remove(clasificacion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return NotFound();
         }
 
-        private bool ClasificacionPlantaExists(int id)
-        {
-            return _context.ClasificacionPlanta.Any(e => e.Id == id);
-        }
+        _context.ClasificacionPlanta.Remove(clasificacion);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+    private bool ClasificacionPlantaExists(int id)
+    {
+        return _context.ClasificacionPlanta.Any(e => e.Id == id);
     }
 }

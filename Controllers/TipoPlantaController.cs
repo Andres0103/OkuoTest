@@ -13,7 +13,6 @@ namespace OkuoTest.Controllers;
 public class TipoPlantaController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-
     public TipoPlantaController(ApplicationDbContext context)
     {
         _context = context;
@@ -36,7 +35,6 @@ public class TipoPlantaController : ControllerBase
         {
             return NotFound();
         }
-
         return tipoPlanta;
     }
 
@@ -46,7 +44,6 @@ public class TipoPlantaController : ControllerBase
     {
         _context.TipoPlanta.Add(tipoPlanta);
         await _context.SaveChangesAsync();
-
         return CreatedAtAction(nameof(GetTipoEmpresa), new { id = tipoPlanta.Id }, tipoPlanta);
     }
 
@@ -75,10 +72,8 @@ public class TipoPlantaController : ControllerBase
                 throw;
             }
         }
-
         return NoContent();
     }
-
 
     // DELETE: api/empresa/5
     [HttpDelete("{id}")]
@@ -92,10 +87,8 @@ public class TipoPlantaController : ControllerBase
 
         _context.TipoPlanta.Remove(tipoPlanta);
         await _context.SaveChangesAsync();
-
         return NoContent();
     }
-
     private bool TipoPlantaExist(int id)
     {
         return _context.TipoPlanta.Any(e => e.Id == id);

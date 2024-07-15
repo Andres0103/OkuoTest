@@ -13,7 +13,6 @@ namespace OkuoTest.Controllers;
 public class EmpresaController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-
     public EmpresaController(ApplicationDbContext context)
     {
         _context = context;
@@ -36,7 +35,6 @@ public class EmpresaController : ControllerBase
         {
             return NotFound();
         }
-
         return empresa;
     }
 
@@ -46,7 +44,6 @@ public class EmpresaController : ControllerBase
     {
         _context.Empresas.Add(empresa);
         await _context.SaveChangesAsync();
-
         return CreatedAtAction(nameof(GetEmpresa), new { id = empresa.Id }, empresa);
     }
 
@@ -75,10 +72,8 @@ public class EmpresaController : ControllerBase
                 throw;
             }
         }
-
         return NoContent();
     }
-
 
     // DELETE: api/empresa/5
     [HttpDelete("{id}")]
@@ -92,10 +87,8 @@ public class EmpresaController : ControllerBase
 
         _context.Empresas.Remove(empresa);
         await _context.SaveChangesAsync();
-
         return NoContent();
     }
-
     private bool EmpresaExists(int id)
     {
         return _context.Empresas.Any(e => e.Id == id);

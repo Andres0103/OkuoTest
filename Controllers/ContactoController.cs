@@ -13,7 +13,6 @@ namespace OkuoTest.Controllers;
 public class ContactoController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-
     public ContactoController(ApplicationDbContext context)
     {
         _context = context;
@@ -26,7 +25,7 @@ public class ContactoController : ControllerBase
         return await _context.Contactos.ToListAsync();
     }
 
-    // GET: api/empresa/5
+    // GET: api/empresa
     [HttpGet("{id}")]
     public async Task<ActionResult<Contacto>> GetContacto(int id)
     {
@@ -36,7 +35,6 @@ public class ContactoController : ControllerBase
         {
             return NotFound();
         }
-
         return contacto;
     }
 
@@ -46,7 +44,6 @@ public class ContactoController : ControllerBase
     {
         _context.Contactos.Add(contacto);
         await _context.SaveChangesAsync();
-
         return CreatedAtAction(nameof(GetContacto), new { id = contacto.Id }, contacto);
     }
 
@@ -75,12 +72,10 @@ public class ContactoController : ControllerBase
                 throw;
             }
         }
-
         return NoContent();
     }
 
-
-    // DELETE: api/empresa/5
+    // DELETE: api/empresa
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteContacto(int id)
     {
@@ -92,10 +87,8 @@ public class ContactoController : ControllerBase
 
         _context.Contactos.Remove(contacto);
         await _context.SaveChangesAsync();
-
         return NoContent();
     }
-
     private bool ContactoExist(int id)
     {
         return _context.Contactos.Any(e => e.Id == id);

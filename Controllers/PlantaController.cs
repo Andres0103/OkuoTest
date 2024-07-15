@@ -47,7 +47,6 @@ namespace OkuoTest.Controllers
         {
             _context.Plantas.Add(planta);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction(nameof(GetPlanta), new { id = planta.Id }, planta);
         }
 
@@ -77,7 +76,6 @@ namespace OkuoTest.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
@@ -93,10 +91,8 @@ namespace OkuoTest.Controllers
 
             _context.Plantas.Remove(planta);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
-
         private bool PlantaExist(int id)
         {
             return _context.Plantas.Any(e => e.Id == id);
